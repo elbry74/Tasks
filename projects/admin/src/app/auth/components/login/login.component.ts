@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginService } from '../../services/login.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
-
+import { NgxSpinnerService } from "ngx-spinner";
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -15,7 +15,8 @@ export class LoginComponent implements OnInit {
     private fb:FormBuilder ,
     private service:LoginService ,
     private toaster:ToastrService,
-    private router:Router
+    private router:Router,
+    private spinner: NgxSpinnerService
     ) { }
 
   loginform!:FormGroup
@@ -32,11 +33,15 @@ export class LoginComponent implements OnInit {
   }
 
   login(){
-    this.service.login(this.loginform.value).subscribe(res =>{
+    this.spinner.show();
+    this.service.login(this.loginform.value).subscribe((res:any) =>{
+      localStorage.setItem("token" , res.token)
       this.toaster.success("success" , "Login Success")
       this.router.navigate(['/tasks'])
+      this.spinner.hide();
     }, error => {
       this.toaster.error(error.error)
+      this.spinner.hide();
     }) 
   }
 }
